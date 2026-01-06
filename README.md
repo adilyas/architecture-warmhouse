@@ -57,35 +57,23 @@
 
 **Диаграмма контейнеров (Containers)**
 
-```markdown
 [C4 диаграмма контейнеров](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Container.png)
-```
 
 **Диаграмма компонентов (Components)**
 
-```markdown
-[C4 диаграмма компонентов - Сервис управления устройствами](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_DeviceService.png)
-```
+[Сервис управления устройствами](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_DeviceService.png)
 
-```markdown
-[C4 диаграмма компонентов - Сервис автоматизации](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_AutomationService.png)
-```
+[Сервис автоматизации](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_AutomationService.png)
 
-```markdown
-[C4 диаграмма компонентов - Сервис управления пользователями](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_UserService.png)
-```
+[Сервис управления пользователями](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_UserService.png)
 
 **Диаграмма кода (Code)**
 
-```markdown
 [C4 диаграмма кода](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Code.png)
-```
 
 # Задание 3. Разработка ER-диаграммы
 
-```markdown
 [C4 диаграмма кода](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/ER_Diagram.png)
-```
 
 # Задание 4. Создание и документирование API
 

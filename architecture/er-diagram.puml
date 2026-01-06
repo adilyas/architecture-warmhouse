@@ -1,0 +1,50 @@
+@startuml ER_Diagram
+
+entity "User" {
+  * id : int
+  --
+  * name : string
+  * login : string
+  * password_sha256 : string
+}
+
+entity "Device" {
+  * id : int
+  --
+  * name : string
+  * type : string
+  * protocol : string
+  * uri : string
+  + user_id : int
+}
+
+entity "Sensor" {
+  * id : int
+  --
+  + device_id : int
+}
+
+entity "Action" {
+  * id : int
+  --
+  * type : string
+  + device_id : int
+}
+
+entity "Trigger" {
+  * id : int
+  --
+  * type : string
+  * threshold : int
+  * operator : string
+  + sensor_id : int
+  + action_id : int
+}
+
+User ||--o{ Device : "owns"
+Device ||--o{ Sensor : "has"
+Device ||--o{ Action : "has"
+Sensor ||--o{ Trigger : "triggers"
+Action ||--o{ Trigger : "triggered by"
+
+@enduml

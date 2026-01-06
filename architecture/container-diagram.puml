@@ -10,10 +10,9 @@ System_Boundary(smart_home, "Система Теплый дом") {
     Container(web_app, "Веб интерфейс", "React/Angular", "Предоставляет пользовательский интерфейс для управления системой")
     Container(api_gateway, "API Gateway", "Go", "Маршрутизирует запросы и обеспечивает безопасность")
 
-    Container(auth_service, "Сервис аутентификации", "Go", "Аутентификация и авторизация пользователей")
     Container(device_service, "Сервис управления устройствами", "Go", "Регистрация и управление устройствами")
     Container(automation_service, "Сервис автоматизации", "Go", "Управление триггерами и действиями, наблюдение за сенсорами")
-    Container(user_service, "Сервис пользователей", "Go", "Управление учетными записями пользователей")
+    Container(user_service, "Сервис пользователей и аутентификации", "Go", "Управление учетными записями пользователей, аутентификация и авторизация")
 
     ContainerDb(database, "База данных", "PostgreSQL", "Хранение данных пользователей, устройств и настроек")
 }
@@ -25,14 +24,12 @@ Rel(user, web_app, "Взаимодействует через", "HTTPS")
 
 Rel(web_app, api_gateway, "Отправляет запросы", "HTTPS")
 
-Rel(api_gateway, auth_service, "Проверяет аутентификацию", "gRPC")
 Rel(api_gateway, device_service, "Получает данные с устройств и управляет ими", "gRPC")
 Rel(api_gateway, automation_service, "Управление сценарями автоматизациии", "gRPC")
-Rel(api_gateway, user_service, "Управление пользователями", "gRPC")
+Rel(api_gateway, user_service, "Управление пользователями, проверка аутентификации", "gRPC")
 
 Rel(automation_service, device_service, "Получает данные с устройств и управляет ими", "gRPC")
 
-Rel(auth_service, database, "Читает/записывает", "SQL")
 Rel(device_service, database, "Читает/записывает", "SQL")
 Rel(automation_service, database, "Читает/записывает", "SQL")
 Rel(user_service, database, "Читает/записывает", "SQL")

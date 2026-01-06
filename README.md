@@ -87,6 +87,37 @@
 
 Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
 
+User:
+id int
+name string
+login string
+password_sha256 string
+
+Device
+id int
+name string
+type string
+user_id int (many to one)
+protocol string
+uri string
+
+Sensor
+id
+device_id int (many to one)
+
+Action
+id
+device_id int (many to one)
+type string
+
+Trigger
+id
+sensor_id int (many to one)
+action_id int (many to one)
+type string
+threshold int
+operator string
+
 # Задание 4. Создание и документирование API
 
 ### 1. Тип API

@@ -61,19 +61,15 @@ package "Автоматизация - Поллинг датчиков" {
 
     interface Sensor {
         +getValue(): int
-        +getType(): SensorType
-        +getDeviceID(): int
     }
 
     class DeviceSensor {
         -deviceID: int
-        -sensorType: SensorType
         +getValue(): int
     }
 
     class DateTimeSensor {
         +getValue(): int
-        +getCurrentTime(): DateTime
     }
 }
 
@@ -86,18 +82,11 @@ package "Автоматизация - Триггеры и действия" {
     }
 
     class ThresholdTrigger {
+        -sensor: Sensor
         -threshold: int
         -operator: ComparisonOperator
         -action: Action
         +isTriggered(sensorValue: int): bool
-        +runAction(): void
-        +isRepeated(): bool
-    }
-
-    class TimeTrigger {
-        -scheduleTime: DateTime
-        -action: Action
-        +isTriggered(): bool
         +runAction(): void
         +isRepeated(): bool
     }
@@ -124,12 +113,9 @@ Sensor <|.. DeviceSensor : implements
 Sensor <|.. DateTimeSensor : implements
 
 Trigger <|.. ThresholdTrigger : implements
-Trigger <|.. TimeTrigger : implements
 Action <|.. DeviceAction : implements
 ThresholdTrigger --> Action : executes
-TimeTrigger --> Action : executes
 
-' Межпакетные связи
 DeviceAction --> DeviceControlService : calls
 SensorPollingService --> ThresholdTrigger : uses
 

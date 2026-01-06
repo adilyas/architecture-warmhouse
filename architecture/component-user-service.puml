@@ -4,21 +4,22 @@
 title Диаграмма компонентов - Сервис управления пользователями
 
 Container(api_gateway, "API Gateway", "Go/Gin", "Маршрутизирует запросы")
-Container(auth_service, "Сервис аутентификации", "Go", "Управляет аутентификацией пользователей")
 ContainerDb(database, "База данных", "PostgreSQL", "Хранение данных пользователей")
 
 Container_Boundary(user_service, "Сервис управления пользователями") {
     Component(user_api, "User API", "REST/gRPC", "API для управления пользователями")
     Component(user_manager, "Менеджер пользователей", "Go", "Логика управления пользователями")
+    Component(auth_manager, "Менеджер аутентификации и авторизации", "Go", "Логика аутентификации и управление правами доступа")
     Component(data_access, "Репозиторий", "Go", "Абстракция для работы с БД")
 }
 
 Rel(api_gateway, user_api, "Запросы управления пользователями", "gRPC")
 
 Rel(user_api, user_manager, "Операции создания и редактирования пользователей", "")
+Rel(user_api, auth_manager, "Проверка аутентификации и авторизация", "")
 
-Rel(user_manager, auth_service, "Создание учетных записей", "gRPC")
-Rel(user_manager, data_access, "Сохранение пользователей в БД", "gRPC")
+Rel(user_manager, data_access, "Сохранение(чтение) пользователей в БД", "gRPC")
+Rel(auth_manager, data_access, "Чтение базы пользователей из БД", "gRPC")
 
 Rel(data_access, database, "SQL запросы", "SQL")
 

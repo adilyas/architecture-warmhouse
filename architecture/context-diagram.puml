@@ -10,14 +10,12 @@ System(warmhouse, "Система Теплый дом", "Монолитное Go
 
 System_Ext(temp_sensors, "Датчики температуры", "Умные датчики для измерения температуры в различных помещениях")
 System_Ext(heating_devices, "Устройства обогрева", "Умные термостаты и системы отопления для регулирования температуры")
-System_Ext(database, "База данных PostgreSQL", "Хранение данных о датчиках, показаниях температуры, пользователях и конфигурации системы")
 
 Rel(admin, warmhouse, "Настраивает систему через", "HTTPS/Web UI")
 Rel(user, warmhouse, "Мониторит температуру и управляет отоплением через", "HTTPS/Web UI")
 
 Rel(warmhouse, temp_sensors, "Собирает данные о температуре", "IoT протоколы")
 Rel(warmhouse, heating_devices, "Отправляет команды управления", "IoT протоколы")
-Rel(warmhouse, database, "Читает и записывает данные", "SQL/TCP")
 
 SHOW_LEGEND()
 @enduml

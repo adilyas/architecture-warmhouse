@@ -1,0 +1,136 @@
+@startuml C4_Code
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Диаграмма кода - Модуль управления устройствами и автоматизация
+
+package "Управление устройствами" {
+    interface ProtocolAdapter {
+        +turnOn(): void
+        +turnOff(): void
+        +supportsSetValue(): bool
+        +setValue(value: int): void
+        +supportsGetValue(): bool
+        +getValue(): int
+    }
+
+    class CameraAdapter {
+        +getVideoStream(): VideoStream
+
+        +turnOn(): void
+        +turnOff(): void
+        +supportsSetValue(): bool
+        +setValue(value: int): void
+        +supportsGetValue(): bool
+        +getValue(): int
+    }
+
+    class Device {
+        +deviceID: int
+        +protocol: string
+        +type: string
+        +name: string
+        +status: string
+    }
+
+    class DeviceControlService {
+        -device: Device
+        -adapter: ProtocolAdapter
+        +controlDevice(command: Command): void
+    }
+
+    class DeviceMonitorService {
+        -device: Device
+        -adapter: ProtocolAdapter
+        +getData(): DeviceData
+    }
+
+    class CameraViewService {
+        -device: Device
+        -adapter: CameraAdapter
+        +getVideoStream(): VideoStream
+    }
+}
+
+package "Автоматизация - Поллинг датчиков" {
+    class SensorPollingService {
+        -sensors: Sensor[]
+        -pollingInterval: int
+        +run(): void
+        +addSensor(sensor: Sensor): void
+    }
+
+    interface Sensor {
+        +getValue(): int
+        +getType(): SensorType
+        +getDeviceID(): int
+    }
+
+    class DeviceSensor {
+        -deviceID: int
+        -sensorType: SensorType
+        +getValue(): int
+    }
+
+    class DateTimeSensor {
+        +getValue(): int
+        +getCurrentTime(): DateTime
+    }
+}
+
+package "Автоматизация - Триггеры и действия" {
+    interface Trigger {
+        +isTriggered(sensorValue: int): bool
+        +runAction(): void
+        +getCondition(): TriggerCondition
+        +isRepeated(): bool
+    }
+
+    class ThresholdTrigger {
+        -threshold: int
+        -operator: ComparisonOperator
+        -action: Action
+        +isTriggered(sensorValue: int): bool
+        +runAction(): void
+        +isRepeated(): bool
+    }
+
+    class TimeTrigger {
+        -scheduleTime: DateTime
+        -action: Action
+        +isTriggered(): bool
+        +runAction(): void
+        +isRepeated(): bool
+    }
+
+    interface Action {
+        +run(): void
+        +getActionType(): ActionType
+    }
+
+    class DeviceAction {
+        -deviceID: int
+        -command: Command
+        +run(): void
+    }
+}
+
+ProtocolAdapter <|.. CameraAdapter : implements
+DeviceControlService --> ProtocolAdapter : uses
+DeviceMonitorService --> ProtocolAdapter : uses
+CameraViewService --> CameraAdapter : uses
+
+SensorPollingService --> DeviceMonitorService : polls RT or cached data
+Sensor <|.. DeviceSensor : implements
+Sensor <|.. DateTimeSensor : implements
+
+Trigger <|.. ThresholdTrigger : implements
+Trigger <|.. TimeTrigger : implements
+Action <|.. DeviceAction : implements
+ThresholdTrigger --> Action : executes
+TimeTrigger --> Action : executes
+
+' Межпакетные связи
+DeviceAction --> DeviceControlService : calls
+SensorPollingService --> ThresholdTrigger : uses
+
+@enduml

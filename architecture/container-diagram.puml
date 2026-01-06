@@ -1,0 +1,43 @@
+@startuml C4_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров системы "Теплый дом"
+
+Person(admin, "Администратор", "Управляет устройствами и настраивает автоматизацию")
+Person(user, "Пользователь", "Контролирует температуру и взаимодействует с устройствами")
+
+System_Boundary(smart_home, "Система Теплый дом") {
+    Container(web_app, "Веб интерфейс", "React/Angular", "Предоставляет пользовательский интерфейс для управления системой")
+    Container(api_gateway, "API Gateway", "Go", "Маршрутизирует запросы и обеспечивает безопасность")
+
+    Container(auth_service, "Сервис аутентификации", "Go", "Аутентификация и авторизация пользователей")
+    Container(device_service, "Сервис управления устройствами", "Go", "Регистрация и управление устройствами")
+    Container(automation_service, "Сервис автоматизации", "Go", "Управление триггерами и действиями, наблюдение за сенсорами")
+    Container(user_service, "Сервис пользователей", "Go", "Управление учетными записями пользователей")
+
+    ContainerDb(database, "База данных", "PostgreSQL", "Хранение данных пользователей, устройств и настроек")
+}
+
+System_Ext(iot_devices, "IoT Устройства", "Датчики температуры, термостаты, камеры, ворота, освещение")
+
+Rel(admin, web_app, "Управляет через", "HTTPS")
+Rel(user, web_app, "Взаимодействует через", "HTTPS")
+
+Rel(web_app, api_gateway, "Отправляет запросы", "HTTPS")
+
+Rel(api_gateway, auth_service, "Проверяет аутентификацию", "gRPC")
+Rel(api_gateway, device_service, "Получает данные с устройств и управляет ими", "gRPC")
+Rel(api_gateway, automation_service, "Управление сценарями автоматизациии", "gRPC")
+Rel(api_gateway, user_service, "Управление пользователями", "gRPC")
+
+Rel(automation_service, device_service, "Получает данные с устройств и управляет ими", "gRPC")
+
+Rel(auth_service, database, "Читает/записывает", "SQL")
+Rel(device_service, database, "Читает/записывает", "SQL")
+Rel(automation_service, database, "Читает/записывает", "SQL")
+Rel(user_service, database, "Читает/записывает", "SQL")
+
+Rel(device_service, iot_devices, "Управляет устройствами, получает данные", "IoT протоколы")
+
+SHOW_LEGEND()
+@enduml

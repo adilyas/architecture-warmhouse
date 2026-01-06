@@ -1,0 +1,34 @@
+@startuml C4_Component_AutomationService
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Диаграмма компонентов - Сервис автоматизации
+
+Container(api_gateway, "API Gateway", "Go/Gin", "Маршрутизирует запросы")
+Container(device_service, "Сервис управления устройствами", "Go", "Управляет IoT устройствами")
+ContainerDb(database, "База данных", "PostgreSQL", "Хранение сценариев и правил")
+
+Container_Boundary(automation_service, "Сервис автоматизации") {
+    Component(automation_api, "Automation API", "gRPC", "API для создания и управления сценариями автоматизации")
+    Component(scenario_manager, "Менеджер объектов автоматизации", "Go", "Создание и управление объектами автоматизации: сенсорами, действиями, триггерами")
+    Component(trigger_engine, "Движок триггеров", "Go", "Обработка условий срабатывания триггеров")
+    Component(action_executor, "Исполнитель действий", "Go", "Выполнение действий при срабатывании триггеров")
+    Component(sensor_poller, "Опросчик датчиков", "Go", "Регулярный сбор данных с датчиков")
+    Component(data_access, "Репозиторий", "Go", "Абстракция для работы с базой данных")
+}
+
+Rel(api_gateway, automation_api, "Управление автоматизацией", "gRPC")
+
+Rel(automation_api, scenario_manager, "Создание сценариев", "")
+Rel(scenario_manager, data_access, "Сохранение сценариев", "")
+
+Rel(sensor_poller, device_service, "Получение данных датчиков", "gRPC")
+Rel(sensor_poller, trigger_engine, "Передача данных", "")
+
+Rel(trigger_engine, action_executor, "Запуск действий", "")
+
+Rel(action_executor, device_service, "Управление устройствами", "gRPC")
+
+Rel(data_access, database, "SQL запросы", "SQL")
+
+SHOW_LEGEND()
+@enduml

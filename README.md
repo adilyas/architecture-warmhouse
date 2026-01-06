@@ -51,9 +51,7 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-```markdown
 [C4 контекстная диаграмма](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Context.png)
-```
 
 # Задание 2. Проектирование микросервисной архитектуры
 

@@ -82,10 +82,11 @@
 3. Сервис управления сценариями автоматизации
 4. Сервис управления пользователями
 
+Компоненты:
 Сервис управления устройствами:
 1. API для регистрации устройств и взаимодействия с ними
 2. Модуль регистрации устройств
-3. Адаптеры для стандартизации работы с различными протоколами и видами устройств: взаимодействуют с устройствами по стандартизированным протоколам
+3. Модуль управления устройствами: адаптеры для стандартизации работы с различными протоколами и видами устройств: взаимодействуют с устройствами по стандартизированным протоколам
 
 Сервис управления сценариями автоматизации:
 1. API для создания и управления сценариями: сенсорами, триггерами и действиями
@@ -96,7 +97,70 @@
 Сервис управления пользователями:
 1. API регистрации пользователя, редактирования профиля и аутентификации
 2. Модуль управления пользователями
-3. Модуль аутентификации: перед выполнением любого действия все сервисы проверяют аутентичность пользователя
+3. Модуль аутентификации: перед выполнением любого действия все сервисы проверяют аутентификацю пользователя
+
+Код:
+Модуль управления устройствами:
+
+interface ProtocolAdapter
+void turnOn()
+void turnOff()
+bool supportsSetValue()
+void setValue()
+bool supportsGetValue()
+int getValue()
+
+class CameraAdapter
+void turnOn()
+void turnOff()
+VideoConnection getVideoStream()
+
+class VideoConnection
+
+class Device
+int deviceID
+string protocol
+string type
+string name
+
+class DeviceControlService
+Device device
+ProtocolAdapter adapter
+
+class CameraControlService
+Device device
+CameraAdapter adapter
+
+Модуль поллинга данных с сенсоров:
+
+class SensorPollingService
+Sensor[] sensors
+void run()
+
+interface Sensor
+int getValue()
+
+class DeviceSensor
+int deviceID
+int getValue()
+
+class DateTimeSensor
+int getValue()
+
+Модуль обработки триггеров и выполнения действий:
+
+interface Trigger
+void runAction()
+bool isTriggered(int sensorValue)
+
+class ThresholdTrigger
+int threshold
+Action action
+bool isTriggered(int sensorValue)
+void runAction()
+
+interface Action
+void run()
 
 В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
 

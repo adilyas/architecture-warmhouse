@@ -1,0 +1,1286 @@
+openapi: 3.0.4
+info:
+  title: Gateway API
+  description: API Gateway that proxies requests to user service and handles authentication
+  version: 1.0.0
+
+servers:
+  - url: https://api.warmhouse.com
+    description: API Gateway
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Proxies registration request to user service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Authenticate user
+      description: Proxies login request to user service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      description: Proxies refresh token request to user service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/profile:
+    get:
+      summary: Get user profile
+      description: Verifies JWT token with user service and returns profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices:
+    post:
+      summary: Register a new device
+      description: Verifies JWT token and proxies device registration to device service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '201':
+          description: Device successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all user devices
+      description: Verifies JWT token and proxies request to device service
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}:
+    get:
+      summary: Get device by ID
+      description: Verifies JWT token and proxies request to device service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Device retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update device
+      description: Verifies JWT token and proxies device update to device service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: Device updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove device
+      description: Verifies JWT token and proxies device removal to device service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '204':
+          description: Device removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/state:
+    get:
+      summary: Get device state
+      description: Verifies JWT token and proxies request to device service to get current device state
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Device state retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceStateResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/action:
+    post:
+      summary: Execute device action
+      description: Verifies JWT token and proxies device action to device service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceActionRequest'
+      responses:
+        '200':
+          description: Action executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceActionResponse'
+        '400':
+          description: Bad request - invalid action for device type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/sensors:
+    post:
+      summary: Create a new sensor
+      description: Verifies JWT token and proxies sensor creation to automation service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorCreateRequest'
+      responses:
+        '201':
+          description: Sensor successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all sensors
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Filter sensors by device ID
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Sensors retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/sensors/{sensorId}:
+    get:
+      summary: Get sensor by ID
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '200':
+          description: Sensor retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update sensor
+      description: Verifies JWT token and proxies sensor update to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorUpdateRequest'
+      responses:
+        '200':
+          description: Sensor updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove sensor
+      description: Verifies JWT token and proxies sensor removal to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '204':
+          description: Sensor removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/actions:
+    post:
+      summary: Create a new action
+      description: Verifies JWT token and proxies action creation to automation service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionCreateRequest'
+      responses:
+        '201':
+          description: Action successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all actions
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Filter actions by device ID
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Actions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/actions/{actionId}:
+    get:
+      summary: Get action by ID
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Action retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update action
+      description: Verifies JWT token and proxies action update to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionUpdateRequest'
+      responses:
+        '200':
+          description: Action updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove action
+      description: Verifies JWT token and proxies action removal to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '204':
+          description: Action removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/triggers:
+    post:
+      summary: Create a new trigger
+      description: Verifies JWT token and proxies trigger creation to automation service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerCreateRequest'
+      responses:
+        '201':
+          description: Trigger successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor or action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all triggers
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensor_id
+          in: query
+          description: Filter triggers by sensor ID
+          schema:
+            $ref: '#/components/schemas/SensorId'
+        - name: action_id
+          in: query
+          description: Filter triggers by action ID
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Triggers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/triggers/{triggerId}:
+    get:
+      summary: Get trigger by ID
+      description: Verifies JWT token and proxies request to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '200':
+          description: Trigger retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update trigger
+      description: Verifies JWT token and proxies trigger update to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerUpdateRequest'
+      responses:
+        '200':
+          description: Trigger updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove trigger
+      description: Verifies JWT token and proxies trigger removal to automation service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '204':
+          description: Trigger removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - login
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "John Doe"
+        login:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "john.doe"
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          example: "securePassword123"
+
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: "john.doe"
+        password:
+          type: string
+          example: "securePassword123"
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    AuthResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 123
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Access token expiration time in seconds
+          example: 3600
+
+    RefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Access token expiration time in seconds
+          example: 3600
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: "John Doe"
+        login:
+          type: string
+          example: "john.doe"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid credentials"
+        message:
+          type: string
+          example: "The provided login or password is incorrect"
+        code:
+          type: integer
+          example: 401
+
+    DeviceId:
+      type: integer
+      minimum: 1
+      example: 123
+
+    UserId:
+      type: integer
+      minimum: 1
+      example: 456
+
+    DeviceName:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: "Living Room Thermostat"
+
+    DeviceType:
+      type: string
+      enum: [thermometer, thermostat, light, gate, camera]
+      example: "thermostat"
+
+    DeviceProtocol:
+      type: string
+      enum: [MQTT, CoAP, HTTP, AMQP]
+      example: "MQTT"
+
+    DeviceUri:
+      type: string
+      minLength: 1
+      maxLength: 255
+      example: "mqtt://192.168.1.100:1883/living-room/thermostat"
+
+    DeviceSettings:
+      type: string
+      maxLength: 1000
+      example: "{\"min_temp\": 15, \"max_temp\": 30, \"schedule\": \"daily\"}"
+
+    Timestamp:
+      type: string
+      format: date-time
+      example: "2023-12-01T10:00:00Z"
+
+    DeviceActionType:
+      type: string
+      enum: [turnOn, turnOff, setValue, switch]
+      description: Type of action to perform on the device
+      example: "turnOn"
+
+    DeviceState:
+      type: string
+      maxLength: 2000
+      description: JSON-encoded device state
+      example: "{\"power\": \"on\", \"temperature\": 22, \"mode\": \"heat\"}"
+
+    ActionValue:
+      type: string
+      maxLength: 500
+      description: Optional value for setValue action (JSON format)
+      example: "{\"temperature\": 24}"
+
+    DeviceCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - protocol
+        - uri
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DeviceId'
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceActionRequest:
+      type: object
+      required:
+        - action_type
+      properties:
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        value:
+          $ref: '#/components/schemas/ActionValue'
+
+    DeviceActionResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        success:
+          type: boolean
+          example: true
+        new_state:
+          $ref: '#/components/schemas/DeviceState'
+        executed_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceStateResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+        state:
+          $ref: '#/components/schemas/DeviceState'
+        last_updated:
+          $ref: '#/components/schemas/Timestamp'
+
+    SensorId:
+      type: integer
+      minimum: 1
+      example: 101
+
+    ActionId:
+      type: integer
+      minimum: 1
+      example: 201
+
+    TriggerId:
+      type: integer
+      minimum: 1
+      example: 301
+
+    UpdateFrequency:
+      type: integer
+      minimum: 1
+      description: Update frequency in seconds
+      example: 60
+
+    UnixTimestamp:
+      type: integer
+      description: Unix timestamp in seconds
+      example: 1701432000
+
+    SensorState:
+      type: string
+      maxLength: 1000
+      description: JSON-encoded sensor state
+      example: "{\"temperature\": 22.5, \"humidity\": 45}"
+
+    ActionType:
+      type: string
+      enum: [turn_on, turn_off, set_temperature, send_notification, open, close]
+      example: "set_temperature"
+
+    TriggerType:
+      type: string
+      enum: [threshold, schedule, state_change, composite]
+      example: "threshold"
+
+    TriggerOperator:
+      type: string
+      enum: [greater_than, less_than, equal, not_equal, greater_or_equal, less_or_equal]
+      example: "greater_than"
+
+    TriggerThreshold:
+      type: integer
+      description: Threshold value for trigger comparison
+      example: 25
+
+    SensorCreateRequest:
+      type: object
+      required:
+        - device_id
+        - update_frequency
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorUpdateRequest:
+      type: object
+      properties:
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SensorId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_updated_ts:
+          $ref: '#/components/schemas/UnixTimestamp'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    ActionCreateRequest:
+      type: object
+      required:
+        - device_id
+        - type
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ActionId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    TriggerCreateRequest:
+      type: object
+      required:
+        - sensor_id
+        - action_id
+        - type
+        - operator
+        - threshold
+      properties:
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/TriggerId'
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'

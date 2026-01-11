@@ -1,0 +1,723 @@
+openapi: 3.0.4
+info:
+  title: Automation Service API
+  description: Automation management service for sensors, actions and triggers
+  version: 1.0.0
+
+servers:
+  - url: https://automation.warmhouse.com
+    description: Automation management service
+
+paths:
+  /sensors:
+    post:
+      summary: Create a new sensor
+      description: Creates a new sensor for a device
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorCreateRequest'
+      responses:
+        '201':
+          description: Sensor successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all sensors
+      description: Returns all sensors for the authenticated user's devices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Filter sensors by device ID
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Sensors retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sensors/{sensorId}:
+    get:
+      summary: Get sensor by ID
+      description: Returns a specific sensor by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '200':
+          description: Sensor retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update sensor
+      description: Updates an existing sensor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorUpdateRequest'
+      responses:
+        '200':
+          description: Sensor updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove sensor
+      description: Removes an existing sensor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '204':
+          description: Sensor removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /actions:
+    post:
+      summary: Create a new action
+      description: Creates a new action for a device
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionCreateRequest'
+      responses:
+        '201':
+          description: Action successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all actions
+      description: Returns all actions for the authenticated user's devices
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Filter actions by device ID
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Actions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /actions/{actionId}:
+    get:
+      summary: Get action by ID
+      description: Returns a specific action by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Action retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update action
+      description: Updates an existing action
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionUpdateRequest'
+      responses:
+        '200':
+          description: Action updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove action
+      description: Removes an existing action
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '204':
+          description: Action removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /triggers:
+    post:
+      summary: Create a new trigger
+      description: Creates a new trigger that connects a sensor to an action
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerCreateRequest'
+      responses:
+        '201':
+          description: Trigger successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Sensor or action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get all triggers
+      description: Returns all triggers for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensor_id
+          in: query
+          description: Filter triggers by sensor ID
+          schema:
+            $ref: '#/components/schemas/SensorId'
+        - name: action_id
+          in: query
+          description: Filter triggers by action ID
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Triggers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /triggers/{triggerId}:
+    get:
+      summary: Get trigger by ID
+      description: Returns a specific trigger by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '200':
+          description: Trigger retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update trigger
+      description: Updates an existing trigger
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerUpdateRequest'
+      responses:
+        '200':
+          description: Trigger updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove trigger
+      description: Removes an existing trigger
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '204':
+          description: Trigger removed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Trigger not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SensorId:
+      type: integer
+      minimum: 1
+      example: 101
+
+    ActionId:
+      type: integer
+      minimum: 1
+      example: 201
+
+    TriggerId:
+      type: integer
+      minimum: 1
+      example: 301
+
+    DeviceId:
+      type: integer
+      minimum: 1
+      example: 123
+
+    UpdateFrequency:
+      type: integer
+      minimum: 1
+      description: Update frequency in seconds
+      example: 60
+
+    Timestamp:
+      type: integer
+      description: Unix timestamp in seconds
+      example: 1701432000
+
+    SensorState:
+      type: string
+      maxLength: 1000
+      description: JSON-encoded sensor state
+      example: "{\"temperature\": 22.5, \"humidity\": 45}"
+
+    ActionType:
+      type: string
+      enum: [turn_on, turn_off, set_temperature, send_notification, open, close]
+      example: "set_temperature"
+
+    TriggerType:
+      type: string
+      enum: [threshold, schedule, state_change, composite]
+      example: "threshold"
+
+    TriggerOperator:
+      type: string
+      enum: [greater_than, less_than, equal, not_equal, greater_or_equal, less_or_equal]
+      example: "greater_than"
+
+    TriggerThreshold:
+      type: integer
+      description: Threshold value for trigger comparison
+      example: 25
+
+    SensorCreateRequest:
+      type: object
+      required:
+        - device_id
+        - update_frequency
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorUpdateRequest:
+      type: object
+      properties:
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SensorId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_updated_ts:
+          $ref: '#/components/schemas/Timestamp'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    ActionCreateRequest:
+      type: object
+      required:
+        - device_id
+        - type
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ActionId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    TriggerCreateRequest:
+      type: object
+      required:
+        - sensor_id
+        - action_id
+        - type
+        - operator
+        - threshold
+      properties:
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/TriggerId'
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer

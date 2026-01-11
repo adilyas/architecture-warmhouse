@@ -6,6 +6,7 @@ entity "User" {
   * name : string
   * login : string
   * password_sha256 : string
+  * role : string
 }
 
 entity "Device" {
@@ -15,12 +16,16 @@ entity "Device" {
   * type : string
   * protocol : string
   * uri : string
+  * settings : string
   + user_id : int
 }
 
 entity "Sensor" {
   * id : int
   --
+  * update_frequency : int
+  * last_updated_ts : int
+  * last_state : string
   + device_id : int
 }
 

@@ -60,7 +60,7 @@ package "Автоматизация - Поллинг датчиков" {
     }
 
     interface Sensor {
-        +getValue(): int
+        +getValueJSON(): string
     }
 
     class DeviceSensor {

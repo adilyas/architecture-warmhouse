@@ -1,0 +1,259 @@
+openapi: 3.0.4
+info:
+  title: User Service API
+  description: Сервис JWT-аутентификации для регистрации пользователей, входа, обновления токенов и верификации
+  version: 1.0.0
+
+servers:
+  - url: https://users.warmhouse.com
+    description: Сервис аутентификации пользователей
+
+paths:
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      description: Создает новую учетную запись пользователя с указанными учетными данными
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Некорректный запрос (ошибки валидации)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Пользователь уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя и выдача токенов
+      description: Аутентифицирует учетные данные пользователя и возвращает токены доступа и обновления
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Аутентификация успешна
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      summary: Обновление токена доступа
+      description: Использует refresh токен для выдачи нового токена доступа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Токен успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '401':
+          description: Недействительный refresh токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/verify:
+    post:
+      summary: Верификация JWT токена и возврат информации о пользователе
+      description: Проверяет JWT токен и возвращает ID пользователя и роль (используется шлюзом)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Токен действителен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '401':
+          description: Недействительный или истекший токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/profile:
+    get:
+      summary: Получение профиля пользователя
+      description: Возвращает информацию о профиле текущего пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Профиль пользователя успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - login
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Иван Иванов"
+        login:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "ivan.ivanov"
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          example: "securePassword123"
+
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: "ivan.ivanov"
+        password:
+          type: string
+          example: "securePassword123"
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    AuthResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 123
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Время истечения токена доступа в секундах
+          example: 3600
+
+    RefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Время истечения токена доступа в секундах
+          example: 3600
+
+    VerifyResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 123
+        login:
+          type: string
+          example: "ivan.ivanov"
+        role:
+          type: string
+          example: "user"
+          enum: ["user", "admin"]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: "Иван Иванов"
+        login:
+          type: string
+          example: "ivan.ivanov"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Неверные учетные данные"
+        message:
+          type: string
+          example: "Указанный логин или пароль неверны"
+        code:
+          type: integer
+          example: 401

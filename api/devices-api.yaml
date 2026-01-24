@@ -5,14 +5,14 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://devices.warmhouse.com
+  - url: http://12.34.56.89:8080
     description: Сервис управления устройствами
 
 paths:
   /devices:
     post:
-      summary: Register a new device
-      description: Creates a new device for the authenticated user
+      summary: Регистрация нового устройства
+      description: Создает новое устройство для аутентифицированного пользователя
       security:
         - bearerAuth: []
       requestBody:
@@ -23,32 +23,32 @@ paths:
               $ref: '#/components/schemas/DeviceCreateRequest'
       responses:
         '201':
-          description: Device successfully registered
+          description: Устройство успешно зарегистрировано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all user devices
-      description: Returns all devices belonging to the authenticated user
+      summary: Получение всех устройств пользователя
+      description: Возвращает все устройства, принадлежащие аутентифицированному пользователю
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Devices retrieved successfully
+          description: Устройства успешно получены
           content:
             application/json:
               schema:
@@ -56,7 +56,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/DeviceResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -64,8 +64,8 @@ paths:
 
   /devices/{deviceId}:
     get:
-      summary: Get device by ID
-      description: Returns a specific device by ID
+      summary: Получение устройства по ID
+      description: Возвращает конкретное устройство по ID
       security:
         - bearerAuth: []
       parameters:
@@ -76,27 +76,27 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Device retrieved successfully
+          description: Устройство успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update device
-      description: Updates an existing device
+      summary: Обновление устройства
+      description: Обновляет существующее устройство
       security:
         - bearerAuth: []
       parameters:
@@ -113,33 +113,33 @@ paths:
               $ref: '#/components/schemas/DeviceUpdateRequest'
       responses:
         '200':
-          description: Device updated successfully
+          description: Устройство успешно обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove device
-      description: Removes an existing device
+      summary: Удаление устройства
+      description: Удаляет существующее устройство
       security:
         - bearerAuth: []
       parameters:
@@ -150,15 +150,15 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '204':
-          description: Device removed successfully
+          description: Устройство успешно удалено
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -166,8 +166,8 @@ paths:
 
   /devices/{deviceId}/state:
     get:
-      summary: Get device state
-      description: Returns the current state of a device in JSON format
+      summary: Получение состояния устройства
+      description: Возвращает текущее состояние устройства в формате JSON
       security:
         - bearerAuth: []
       parameters:
@@ -178,19 +178,19 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Device state retrieved successfully
+          description: Состояние устройства успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceStateResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -198,8 +198,8 @@ paths:
 
   /devices/{deviceId}/action:
     post:
-      summary: Execute device action
-      description: Executes an action on a device to change its state
+      summary: Выполнение действия над устройством
+      description: Выполняет действие над устройством для изменения его состояния
       security:
         - bearerAuth: []
       parameters:
@@ -216,25 +216,25 @@ paths:
               $ref: '#/components/schemas/DeviceActionRequest'
       responses:
         '200':
-          description: Action executed successfully
+          description: Действие успешно выполнено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceActionResponse'
         '400':
-          description: Bad request - invalid action for device type
+          description: Некорректный запрос - недопустимое действие для типа устройства
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -262,7 +262,7 @@ components:
       type: string
       minLength: 1
       maxLength: 100
-      example: "Living Room Thermostat"
+      example: "Термостат гостиной"
 
     DeviceType:
       type: string
@@ -293,19 +293,19 @@ components:
     DeviceActionType:
       type: string
       enum: [turnOn, turnOff, setValue, switch]
-      description: Type of action to perform on the device
+      description: Тип действия для выполнения над устройством
       example: "turnOn"
 
     DeviceState:
       type: string
       maxLength: 2000
-      description: JSON-encoded device state
+      description: Состояние устройства в формате JSON
       example: "{\"power\": \"on\", \"temperature\": 22, \"mode\": \"heat\"}"
 
     ActionValue:
       type: string
       maxLength: 500
-      description: Optional value for setValue action (JSON format)
+      description: Опциональное значение для действия setValue (формат JSON)
       example: "{\"temperature\": 24}"
 
     DeviceCreateRequest:

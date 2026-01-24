@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Gateway API
-  description: API Gateway that proxies requests to user service and handles authentication
+  description: API Gateway для проксирования запросов к сервисам и обработки аутентификации
   version: 1.0.0
 
 servers:
@@ -11,8 +11,8 @@ servers:
 paths:
   /auth/register:
     post:
-      summary: Register a new user
-      description: Proxies registration request to user service
+      summary: Регистрация нового пользователя
+      description: Проксирует запрос на регистрацию к сервису пользователей
       requestBody:
         required: true
         content:
@@ -21,19 +21,19 @@ paths:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
         '201':
-          description: User successfully registered
+          description: Пользователь успешно зарегистрирован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: User already exists
+          description: Пользователь уже существует
           content:
             application/json:
               schema:
@@ -41,8 +41,8 @@ paths:
 
   /auth/login:
     post:
-      summary: Authenticate user
-      description: Proxies login request to user service
+      summary: Аутентификация пользователя
+      description: Проксирует запрос на вход к сервису пользователей
       requestBody:
         required: true
         content:
@@ -51,13 +51,13 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Authentication successful
+          description: Аутентификация успешна
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: Invalid credentials
+          description: Неверные учетные данные
           content:
             application/json:
               schema:
@@ -65,8 +65,8 @@ paths:
 
   /auth/refresh:
     post:
-      summary: Refresh access token
-      description: Proxies refresh token request to user service
+      summary: Обновление токена доступа
+      description: Проксирует запрос на обновление токена к сервису пользователей
       requestBody:
         required: true
         content:
@@ -75,13 +75,13 @@ paths:
               $ref: '#/components/schemas/RefreshRequest'
       responses:
         '200':
-          description: Token refreshed successfully
+          description: Токен успешно обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RefreshResponse'
         '401':
-          description: Invalid refresh token
+          description: Недействительный refresh токен
           content:
             application/json:
               schema:
@@ -89,19 +89,19 @@ paths:
 
   /users/profile:
     get:
-      summary: Get user profile
-      description: Verifies JWT token with user service and returns profile
+      summary: Получение профиля пользователя
+      description: Верифицирует JWT токен с сервисом пользователей и возвращает профиль
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: User profile retrieved successfully
+          description: Профиль пользователя успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfile'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -109,8 +109,8 @@ paths:
 
   /devices:
     post:
-      summary: Register a new device
-      description: Verifies JWT token and proxies device registration to device service
+      summary: Регистрация нового устройства
+      description: Верифицирует JWT токен и проксирует регистрацию устройства к сервису устройств
       security:
         - bearerAuth: []
       requestBody:
@@ -121,32 +121,32 @@ paths:
               $ref: '#/components/schemas/DeviceCreateRequest'
       responses:
         '201':
-          description: Device successfully registered
+          description: Устройство успешно зарегистрировано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all user devices
-      description: Verifies JWT token and proxies request to device service
+      summary: Получение всех устройств пользователя
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Devices retrieved successfully
+          description: Устройства успешно получены
           content:
             application/json:
               schema:
@@ -154,7 +154,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/DeviceResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -162,8 +162,8 @@ paths:
 
   /devices/{deviceId}:
     get:
-      summary: Get device by ID
-      description: Verifies JWT token and proxies request to device service
+      summary: Получение устройства по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств
       security:
         - bearerAuth: []
       parameters:
@@ -174,27 +174,27 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Device retrieved successfully
+          description: Устройство успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update device
-      description: Verifies JWT token and proxies device update to device service
+      summary: Обновление устройства
+      description: Верифицирует JWT токен и проксирует обновление устройства к сервису устройств
       security:
         - bearerAuth: []
       parameters:
@@ -211,33 +211,33 @@ paths:
               $ref: '#/components/schemas/DeviceUpdateRequest'
       responses:
         '200':
-          description: Device updated successfully
+          description: Устройство успешно обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove device
-      description: Verifies JWT token and proxies device removal to device service
+      summary: Удаление устройства
+      description: Верифицирует JWT токен и проксирует удаление устройства к сервису устройств
       security:
         - bearerAuth: []
       parameters:
@@ -248,15 +248,15 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '204':
-          description: Device removed successfully
+          description: Устройство успешно удалено
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -264,8 +264,8 @@ paths:
 
   /devices/{deviceId}/state:
     get:
-      summary: Get device state
-      description: Verifies JWT token and proxies request to device service to get current device state
+      summary: Получение состояния устройства
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств для получения текущего состояния устройства
       security:
         - bearerAuth: []
       parameters:
@@ -276,19 +276,19 @@ paths:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Device state retrieved successfully
+          description: Состояние устройства успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceStateResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -296,8 +296,8 @@ paths:
 
   /devices/{deviceId}/action:
     post:
-      summary: Execute device action
-      description: Verifies JWT token and proxies device action to device service
+      summary: Выполнение действия над устройством
+      description: Верифицирует JWT токен и проксирует действие над устройством к сервису устройств
       security:
         - bearerAuth: []
       parameters:
@@ -314,25 +314,25 @@ paths:
               $ref: '#/components/schemas/DeviceActionRequest'
       responses:
         '200':
-          description: Action executed successfully
+          description: Действие успешно выполнено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeviceActionResponse'
         '400':
-          description: Bad request - invalid action for device type
+          description: Некорректный запрос - недопустимое действие для типа устройства
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
@@ -340,8 +340,8 @@ paths:
 
   /automation/sensors:
     post:
-      summary: Create a new sensor
-      description: Verifies JWT token and proxies sensor creation to automation service
+      summary: Создание нового датчика
+      description: Верифицирует JWT токен и проксирует создание датчика к сервису автоматизации
       security:
         - bearerAuth: []
       requestBody:
@@ -352,44 +352,44 @@ paths:
               $ref: '#/components/schemas/SensorCreateRequest'
       responses:
         '201':
-          description: Sensor successfully created
+          description: Датчик успешно создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all sensors
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение всех датчиков
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
         - name: device_id
           in: query
-          description: Filter sensors by device ID
+          description: Фильтр датчиков по ID устройства
           schema:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Sensors retrieved successfully
+          description: Датчики успешно получены
           content:
             application/json:
               schema:
@@ -397,7 +397,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/SensorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -405,8 +405,8 @@ paths:
 
   /automation/sensors/{sensorId}:
     get:
-      summary: Get sensor by ID
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение датчика по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -417,27 +417,27 @@ paths:
             $ref: '#/components/schemas/SensorId'
       responses:
         '200':
-          description: Sensor retrieved successfully
+          description: Датчик успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update sensor
-      description: Verifies JWT token and proxies sensor update to automation service
+      summary: Обновление датчика
+      description: Верифицирует JWT токен и проксирует обновление датчика к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -454,33 +454,33 @@ paths:
               $ref: '#/components/schemas/SensorUpdateRequest'
       responses:
         '200':
-          description: Sensor updated successfully
+          description: Датчик успешно обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove sensor
-      description: Verifies JWT token and proxies sensor removal to automation service
+      summary: Удаление датчика
+      description: Верифицирует JWT токен и проксирует удаление датчика к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -491,15 +491,15 @@ paths:
             $ref: '#/components/schemas/SensorId'
       responses:
         '204':
-          description: Sensor removed successfully
+          description: Датчик успешно удален
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
@@ -507,8 +507,8 @@ paths:
 
   /automation/actions:
     post:
-      summary: Create a new action
-      description: Verifies JWT token and proxies action creation to automation service
+      summary: Создание нового действия
+      description: Верифицирует JWT токен и проксирует создание действия к сервису автоматизации
       security:
         - bearerAuth: []
       requestBody:
@@ -519,44 +519,44 @@ paths:
               $ref: '#/components/schemas/ActionCreateRequest'
       responses:
         '201':
-          description: Action successfully created
+          description: Действие успешно создано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all actions
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение всех действий
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
         - name: device_id
           in: query
-          description: Filter actions by device ID
+          description: Фильтр действий по ID устройства
           schema:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Actions retrieved successfully
+          description: Действия успешно получены
           content:
             application/json:
               schema:
@@ -564,7 +564,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ActionResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -572,8 +572,8 @@ paths:
 
   /automation/actions/{actionId}:
     get:
-      summary: Get action by ID
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение действия по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -584,27 +584,27 @@ paths:
             $ref: '#/components/schemas/ActionId'
       responses:
         '200':
-          description: Action retrieved successfully
+          description: Действие успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update action
-      description: Verifies JWT token and proxies action update to automation service
+      summary: Обновление действия
+      description: Верифицирует JWT токен и проксирует обновление действия к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -621,33 +621,33 @@ paths:
               $ref: '#/components/schemas/ActionUpdateRequest'
       responses:
         '200':
-          description: Action updated successfully
+          description: Действие успешно обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove action
-      description: Verifies JWT token and proxies action removal to automation service
+      summary: Удаление действия
+      description: Верифицирует JWT токен и проксирует удаление действия к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -658,15 +658,15 @@ paths:
             $ref: '#/components/schemas/ActionId'
       responses:
         '204':
-          description: Action removed successfully
+          description: Действие успешно удалено
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
@@ -674,8 +674,8 @@ paths:
 
   /automation/triggers:
     post:
-      summary: Create a new trigger
-      description: Verifies JWT token and proxies trigger creation to automation service
+      summary: Создание нового триггера
+      description: Верифицирует JWT токен и проксирует создание триггера к сервису автоматизации
       security:
         - bearerAuth: []
       requestBody:
@@ -686,49 +686,49 @@ paths:
               $ref: '#/components/schemas/TriggerCreateRequest'
       responses:
         '201':
-          description: Trigger successfully created
+          description: Триггер успешно создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor or action not found
+          description: Датчик или действие не найдены
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all triggers
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение всех триггеров
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
         - name: sensor_id
           in: query
-          description: Filter triggers by sensor ID
+          description: Фильтр триггеров по ID датчика
           schema:
             $ref: '#/components/schemas/SensorId'
         - name: action_id
           in: query
-          description: Filter triggers by action ID
+          description: Фильтр триггеров по ID действия
           schema:
             $ref: '#/components/schemas/ActionId'
       responses:
         '200':
-          description: Triggers retrieved successfully
+          description: Триггеры успешно получены
           content:
             application/json:
               schema:
@@ -736,7 +736,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/TriggerResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -744,8 +744,8 @@ paths:
 
   /automation/triggers/{triggerId}:
     get:
-      summary: Get trigger by ID
-      description: Verifies JWT token and proxies request to automation service
+      summary: Получение триггера по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -756,27 +756,27 @@ paths:
             $ref: '#/components/schemas/TriggerId'
       responses:
         '200':
-          description: Trigger retrieved successfully
+          description: Триггер успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update trigger
-      description: Verifies JWT token and proxies trigger update to automation service
+      summary: Обновление триггера
+      description: Верифицирует JWT токен и проксирует обновление триггера к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -793,33 +793,33 @@ paths:
               $ref: '#/components/schemas/TriggerUpdateRequest'
       responses:
         '200':
-          description: Trigger updated successfully
+          description: Триггер успешно обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove trigger
-      description: Verifies JWT token and proxies trigger removal to automation service
+      summary: Удаление триггера
+      description: Верифицирует JWT токен и проксирует удаление триггера к сервису автоматизации
       security:
         - bearerAuth: []
       parameters:
@@ -830,15 +830,15 @@ paths:
             $ref: '#/components/schemas/TriggerId'
       responses:
         '204':
-          description: Trigger removed successfully
+          description: Триггер успешно удален
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
@@ -914,7 +914,7 @@ components:
           example: "Bearer"
         expires_in:
           type: integer
-          description: Access token expiration time in seconds
+          description: Время истечения токена доступа в секундах
           example: 3600
 
     RefreshResponse:
@@ -928,7 +928,7 @@ components:
           example: "Bearer"
         expires_in:
           type: integer
-          description: Access token expiration time in seconds
+          description: Время истечения токена доступа в секундах
           example: 3600
 
     UserProfile:
@@ -1006,19 +1006,19 @@ components:
     DeviceActionType:
       type: string
       enum: [turnOn, turnOff, setValue, switch]
-      description: Type of action to perform on the device
+      description: Тип действия для выполнения над устройством
       example: "turnOn"
 
     DeviceState:
       type: string
       maxLength: 2000
-      description: JSON-encoded device state
+      description: Состояние устройства в формате JSON
       example: "{\"power\": \"on\", \"temperature\": 22, \"mode\": \"heat\"}"
 
     ActionValue:
       type: string
       maxLength: 500
-      description: Optional value for setValue action (JSON format)
+      description: Опциональное значение для действия setValue (формат JSON)
       example: "{\"temperature\": 24}"
 
     DeviceCreateRequest:
@@ -1131,18 +1131,18 @@ components:
     UpdateFrequency:
       type: integer
       minimum: 1
-      description: Update frequency in seconds
+      description: Частота обновления в секундах
       example: 60
 
     UnixTimestamp:
       type: integer
-      description: Unix timestamp in seconds
+      description: Unix timestamp в секундах
       example: 1701432000
 
     SensorState:
       type: string
       maxLength: 1000
-      description: JSON-encoded sensor state
+      description: Состояние датчика в формате JSON
       example: "{\"temperature\": 22.5, \"humidity\": 45}"
 
     ActionType:
@@ -1162,7 +1162,7 @@ components:
 
     TriggerThreshold:
       type: integer
-      description: Threshold value for trigger comparison
+      description: Пороговое значение для сравнения триггера
       example: 25
 
     SensorCreateRequest:

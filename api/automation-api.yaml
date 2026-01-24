@@ -1,18 +1,18 @@
 openapi: 3.0.4
 info:
   title: Automation Service API
-  description: Automation management service for sensors, actions and triggers
+  description: Сервис управления автоматизацией для датчиков, действий и триггеров
   version: 1.0.0
 
 servers:
-  - url: https://automation.warmhouse.com
-    description: Automation management service
+  - url: http://12.34.56.90:8080
+    description: Сервис управления автоматизацией
 
 paths:
   /sensors:
     post:
-      summary: Create a new sensor
-      description: Creates a new sensor for a device
+      summary: Создание нового датчика
+      description: Создает новый датчик для устройства
       security:
         - bearerAuth: []
       requestBody:
@@ -23,44 +23,44 @@ paths:
               $ref: '#/components/schemas/SensorCreateRequest'
       responses:
         '201':
-          description: Sensor successfully created
+          description: Датчик успешно создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all sensors
-      description: Returns all sensors for the authenticated user's devices
+      summary: Получение всех датчиков
+      description: Возвращает все датчики для устройств аутентифицированного пользователя
       security:
         - bearerAuth: []
       parameters:
         - name: device_id
           in: query
-          description: Filter sensors by device ID
+          description: Фильтр датчиков по ID устройства
           schema:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Sensors retrieved successfully
+          description: Датчики успешно получены
           content:
             application/json:
               schema:
@@ -68,7 +68,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/SensorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -76,8 +76,8 @@ paths:
 
   /sensors/{sensorId}:
     get:
-      summary: Get sensor by ID
-      description: Returns a specific sensor by ID
+      summary: Получение датчика по ID
+      description: Возвращает конкретный датчик по ID
       security:
         - bearerAuth: []
       parameters:
@@ -88,27 +88,27 @@ paths:
             $ref: '#/components/schemas/SensorId'
       responses:
         '200':
-          description: Sensor retrieved successfully
+          description: Датчик успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update sensor
-      description: Updates an existing sensor
+      summary: Обновление датчика
+      description: Обновляет существующий датчик
       security:
         - bearerAuth: []
       parameters:
@@ -125,33 +125,33 @@ paths:
               $ref: '#/components/schemas/SensorUpdateRequest'
       responses:
         '200':
-          description: Sensor updated successfully
+          description: Датчик успешно обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SensorResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove sensor
-      description: Removes an existing sensor
+      summary: Удаление датчика
+      description: Удаляет существующий датчик
       security:
         - bearerAuth: []
       parameters:
@@ -162,15 +162,15 @@ paths:
             $ref: '#/components/schemas/SensorId'
       responses:
         '204':
-          description: Sensor removed successfully
+          description: Датчик успешно удален
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor not found
+          description: Датчик не найден
           content:
             application/json:
               schema:
@@ -178,8 +178,8 @@ paths:
 
   /actions:
     post:
-      summary: Create a new action
-      description: Creates a new action for a device
+      summary: Создание нового действия
+      description: Создает новое действие для устройства
       security:
         - bearerAuth: []
       requestBody:
@@ -190,44 +190,44 @@ paths:
               $ref: '#/components/schemas/ActionCreateRequest'
       responses:
         '201':
-          description: Action successfully created
+          description: Действие успешно создано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Device not found
+          description: Устройство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all actions
-      description: Returns all actions for the authenticated user's devices
+      summary: Получение всех действий
+      description: Возвращает все действия для устройств аутентифицированного пользователя
       security:
         - bearerAuth: []
       parameters:
         - name: device_id
           in: query
-          description: Filter actions by device ID
+          description: Фильтр действий по ID устройства
           schema:
             $ref: '#/components/schemas/DeviceId'
       responses:
         '200':
-          description: Actions retrieved successfully
+          description: Действия успешно получены
           content:
             application/json:
               schema:
@@ -235,7 +235,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/ActionResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -243,8 +243,8 @@ paths:
 
   /actions/{actionId}:
     get:
-      summary: Get action by ID
-      description: Returns a specific action by ID
+      summary: Получение действия по ID
+      description: Возвращает конкретное действие по ID
       security:
         - bearerAuth: []
       parameters:
@@ -255,27 +255,27 @@ paths:
             $ref: '#/components/schemas/ActionId'
       responses:
         '200':
-          description: Action retrieved successfully
+          description: Действие успешно получено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update action
-      description: Updates an existing action
+      summary: Обновление действия
+      description: Обновляет существующее действие
       security:
         - bearerAuth: []
       parameters:
@@ -292,33 +292,33 @@ paths:
               $ref: '#/components/schemas/ActionUpdateRequest'
       responses:
         '200':
-          description: Action updated successfully
+          description: Действие успешно обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ActionResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove action
-      description: Removes an existing action
+      summary: Удаление действия
+      description: Удаляет существующее действие
       security:
         - bearerAuth: []
       parameters:
@@ -329,15 +329,15 @@ paths:
             $ref: '#/components/schemas/ActionId'
       responses:
         '204':
-          description: Action removed successfully
+          description: Действие успешно удалено
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Action not found
+          description: Действие не найдено
           content:
             application/json:
               schema:
@@ -345,8 +345,8 @@ paths:
 
   /triggers:
     post:
-      summary: Create a new trigger
-      description: Creates a new trigger that connects a sensor to an action
+      summary: Создание нового триггера
+      description: Создает новый триггер, связывающий датчик с действием
       security:
         - bearerAuth: []
       requestBody:
@@ -357,49 +357,49 @@ paths:
               $ref: '#/components/schemas/TriggerCreateRequest'
       responses:
         '201':
-          description: Trigger successfully created
+          description: Триггер успешно создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Sensor or action not found
+          description: Датчик или действие не найдены
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     get:
-      summary: Get all triggers
-      description: Returns all triggers for the authenticated user
+      summary: Получение всех триггеров
+      description: Возвращает все триггеры для аутентифицированного пользователя
       security:
         - bearerAuth: []
       parameters:
         - name: sensor_id
           in: query
-          description: Filter triggers by sensor ID
+          description: Фильтр триггеров по ID датчика
           schema:
             $ref: '#/components/schemas/SensorId'
         - name: action_id
           in: query
-          description: Filter triggers by action ID
+          description: Фильтр триггеров по ID действия
           schema:
             $ref: '#/components/schemas/ActionId'
       responses:
         '200':
-          description: Triggers retrieved successfully
+          description: Триггеры успешно получены
           content:
             application/json:
               schema:
@@ -407,7 +407,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/TriggerResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
@@ -415,8 +415,8 @@ paths:
 
   /triggers/{triggerId}:
     get:
-      summary: Get trigger by ID
-      description: Returns a specific trigger by ID
+      summary: Получение триггера по ID
+      description: Возвращает конкретный триггер по ID
       security:
         - bearerAuth: []
       parameters:
@@ -427,27 +427,27 @@ paths:
             $ref: '#/components/schemas/TriggerId'
       responses:
         '200':
-          description: Trigger retrieved successfully
+          description: Триггер успешно получен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update trigger
-      description: Updates an existing trigger
+      summary: Обновление триггера
+      description: Обновляет существующий триггер
       security:
         - bearerAuth: []
       parameters:
@@ -464,33 +464,33 @@ paths:
               $ref: '#/components/schemas/TriggerUpdateRequest'
       responses:
         '200':
-          description: Trigger updated successfully
+          description: Триггер успешно обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TriggerResponse'
         '400':
-          description: Bad request
+          description: Некорректный запрос
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Remove trigger
-      description: Removes an existing trigger
+      summary: Удаление триггера
+      description: Удаляет существующий триггер
       security:
         - bearerAuth: []
       parameters:
@@ -501,15 +501,15 @@ paths:
             $ref: '#/components/schemas/TriggerId'
       responses:
         '204':
-          description: Trigger removed successfully
+          description: Триггер успешно удален
         '401':
-          description: Unauthorized
+          description: Не авторизован
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Trigger not found
+          description: Триггер не найден
           content:
             application/json:
               schema:
@@ -546,18 +546,18 @@ components:
     UpdateFrequency:
       type: integer
       minimum: 1
-      description: Update frequency in seconds
+      description: Частота обновления в секундах
       example: 60
 
     Timestamp:
       type: integer
-      description: Unix timestamp in seconds
+      description: Unix timestamp в секундах
       example: 1701432000
 
     SensorState:
       type: string
       maxLength: 1000
-      description: JSON-encoded sensor state
+      description: Состояние датчика в формате JSON
       example: "{\"temperature\": 22.5, \"humidity\": 45}"
 
     ActionType:
@@ -577,7 +577,7 @@ components:
 
     TriggerThreshold:
       type: integer
-      description: Threshold value for trigger comparison
+      description: Пороговое значение для сравнения триггера
       example: 25
 
     SensorCreateRequest:

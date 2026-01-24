@@ -31,7 +31,7 @@
 
 ### 3. Определение доменов и границы контекстов
 
-- "Управление отоплением": Включение и выключение отопления, настройка расписаний.
+- (домен) "Управление отоплением": Включение и выключение отопления, настройка расписаний.
     - (поддомен) "Управление отоплением": Логика включения и выключения отопления.
         - (контекст) "Включение/выключение отопления": Обработка команд пользователей для управления отоплением.
     - (поддомен) "Мониторинг температуры": Сбор данных с датчиков, отображение текущей температуры пользователям.
@@ -51,39 +51,42 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-[C4 контекстная диаграмма](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Context.png)
+[C4 контекстная диаграмма](architecture/C4_Context.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
 **Диаграмма контейнеров (Containers)**
 
-[C4 диаграмма контейнеров](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Container.png)
+[C4 диаграмма контейнеров](architecture/C4_Container.png)
 
 **Диаграмма компонентов (Components)**
 
-[Сервис управления устройствами](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_DeviceService.png)
+[Сервис управления устройствами](architecture/C4_Component_DeviceService.png)
 
-[Сервис автоматизации](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_AutomationService.png)
+[Сервис автоматизации](architecture/C4_Component_AutomationService.png)
 
-[Сервис управления пользователями](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Component_UserService.png)
+[Сервис управления пользователями](architecture/C4_Component_UserService.png)
 
 **Диаграмма кода (Code)**
 
-[C4 диаграмма кода](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/C4_Code.png)
+[C4 диаграмма кода](architecture/C4_Code.png)
 
 # Задание 3. Разработка ER-диаграммы
 
-[C4 диаграмма кода](https://github.com/adilyas/architecture-warmhouse/blob/warmhouse/architecture/ER_Diagram.png)
+[C4 диаграмма кода](architecture/ER_Diagram.png)
 
 # Задание 4. Создание и документирование API
 
 ### 1. Тип API
 
-Будем использовать HTTP в виде спецификации OpenAPI. Из достоинств широкое распространение(почти каждый разработчик знает), удобство чтения и редактирования(human-friendly). С технической точки зрения есть множество решений для кодогенерации заглушек для хендлеров и клиентов на любые языки. Для внутреннего общения между сервисами будет достаточно HTTP, для сервиса гейтвея нужен HTTPS.
+Будем использовать HTTP в виде спецификации OpenAPI. Из достоинств: широкое распространение(почти каждый разработчик знает), удобство чтения и редактирования(human-friendly). С технической точки зрения есть множество решений для кодогенерации заглушек для хендлеров и клиентов на любые языки. Для внутреннего общения между сервисами будет достаточно HTTP, для сервиса гейтвея нужен HTTPS.
 
 ### 2. Документация API
 
-Здесь приложите ссылки на документацию API для микросервисов, которые вы спроектировали в первой части проектной работы. Для документирования используйте Swagger/OpenAPI или AsyncAPI.
+- [Gateway API](api/gateway-api.yaml) - API gateway для внешних запросов
+- [Users API](api/users-api.yaml) - API сервиса управления пользователями
+- [Devices API](api/devices-api.yaml) - API сервиса управления устройствами
+- [Automation API](api/automation-api.yaml) - API сервиса автоматизации
 
 # Задание 5. Работа с docker и docker-compose
 

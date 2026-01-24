@@ -1,0 +1,1286 @@
+openapi: 3.0.4
+info:
+  title: Gateway API
+  description: API Gateway для проксирования запросов к сервисам и обработки аутентификации
+  version: 1.0.0
+
+servers:
+  - url: https://api.warmhouse.com
+    description: API Gateway
+
+paths:
+  /auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      description: Проксирует запрос на регистрацию к сервису пользователей
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Пользователь уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Аутентификация пользователя
+      description: Проксирует запрос на вход к сервису пользователей
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Аутентификация успешна
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      summary: Обновление токена доступа
+      description: Проксирует запрос на обновление токена к сервису пользователей
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Токен успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '401':
+          description: Недействительный refresh токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/profile:
+    get:
+      summary: Получение профиля пользователя
+      description: Верифицирует JWT токен с сервисом пользователей и возвращает профиль
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Профиль пользователя успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices:
+    post:
+      summary: Регистрация нового устройства
+      description: Верифицирует JWT токен и проксирует регистрацию устройства к сервису устройств
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '201':
+          description: Устройство успешно зарегистрировано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Получение всех устройств пользователя
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Устройства успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}:
+    get:
+      summary: Получение устройства по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Устройство успешно получено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновление устройства
+      description: Верифицирует JWT токен и проксирует обновление устройства к сервису устройств
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: Устройство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удаление устройства
+      description: Верифицирует JWT токен и проксирует удаление устройства к сервису устройств
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '204':
+          description: Устройство успешно удалено
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/state:
+    get:
+      summary: Получение состояния устройства
+      description: Верифицирует JWT токен и проксирует запрос к сервису устройств для получения текущего состояния устройства
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Состояние устройства успешно получено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceStateResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/action:
+    post:
+      summary: Выполнение действия над устройством
+      description: Верифицирует JWT токен и проксирует действие над устройством к сервису устройств
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceActionRequest'
+      responses:
+        '200':
+          description: Действие успешно выполнено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceActionResponse'
+        '400':
+          description: Некорректный запрос - недопустимое действие для типа устройства
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/sensors:
+    post:
+      summary: Создание нового датчика
+      description: Верифицирует JWT токен и проксирует создание датчика к сервису автоматизации
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorCreateRequest'
+      responses:
+        '201':
+          description: Датчик успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Получение всех датчиков
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Фильтр датчиков по ID устройства
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Датчики успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/sensors/{sensorId}:
+    get:
+      summary: Получение датчика по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '200':
+          description: Датчик успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Датчик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновление датчика
+      description: Верифицирует JWT токен и проксирует обновление датчика к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorUpdateRequest'
+      responses:
+        '200':
+          description: Датчик успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Датчик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удаление датчика
+      description: Верифицирует JWT токен и проксирует удаление датчика к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SensorId'
+      responses:
+        '204':
+          description: Датчик успешно удален
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Датчик не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/actions:
+    post:
+      summary: Создание нового действия
+      description: Верифицирует JWT токен и проксирует создание действия к сервису автоматизации
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionCreateRequest'
+      responses:
+        '201':
+          description: Действие успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Получение всех действий
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          description: Фильтр действий по ID устройства
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Действия успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/actions/{actionId}:
+    get:
+      summary: Получение действия по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Действие успешно получено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Действие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновление действия
+      description: Верифицирует JWT токен и проксирует обновление действия к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionUpdateRequest'
+      responses:
+        '200':
+          description: Действие успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Действие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удаление действия
+      description: Верифицирует JWT токен и проксирует удаление действия к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '204':
+          description: Действие успешно удалено
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Действие не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/triggers:
+    post:
+      summary: Создание нового триггера
+      description: Верифицирует JWT токен и проксирует создание триггера к сервису автоматизации
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerCreateRequest'
+      responses:
+        '201':
+          description: Триггер успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Датчик или действие не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Получение всех триггеров
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensor_id
+          in: query
+          description: Фильтр триггеров по ID датчика
+          schema:
+            $ref: '#/components/schemas/SensorId'
+        - name: action_id
+          in: query
+          description: Фильтр триггеров по ID действия
+          schema:
+            $ref: '#/components/schemas/ActionId'
+      responses:
+        '200':
+          description: Триггеры успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /automation/triggers/{triggerId}:
+    get:
+      summary: Получение триггера по ID
+      description: Верифицирует JWT токен и проксирует запрос к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '200':
+          description: Триггер успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Триггер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновление триггера
+      description: Верифицирует JWT токен и проксирует обновление триггера к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriggerUpdateRequest'
+      responses:
+        '200':
+          description: Триггер успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Триггер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удаление триггера
+      description: Верифицирует JWT токен и проксирует удаление триггера к сервису автоматизации
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: triggerId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TriggerId'
+      responses:
+        '204':
+          description: Триггер успешно удален
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Триггер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - login
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "John Doe"
+        login:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: "john.doe"
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          example: "securePassword123"
+
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: "john.doe"
+        password:
+          type: string
+          example: "securePassword123"
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    AuthResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 123
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refresh_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Время истечения токена доступа в секундах
+          example: 3600
+
+    RefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+        expires_in:
+          type: integer
+          description: Время истечения токена доступа в секундах
+          example: 3600
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        name:
+          type: string
+          example: "John Doe"
+        login:
+          type: string
+          example: "john.doe"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-01T10:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid credentials"
+        message:
+          type: string
+          example: "The provided login or password is incorrect"
+        code:
+          type: integer
+          example: 401
+
+    DeviceId:
+      type: integer
+      minimum: 1
+      example: 123
+
+    UserId:
+      type: integer
+      minimum: 1
+      example: 456
+
+    DeviceName:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: "Living Room Thermostat"
+
+    DeviceType:
+      type: string
+      enum: [thermometer, thermostat, light, gate, camera]
+      example: "thermostat"
+
+    DeviceProtocol:
+      type: string
+      enum: [MQTT, CoAP, HTTP, AMQP]
+      example: "MQTT"
+
+    DeviceUri:
+      type: string
+      minLength: 1
+      maxLength: 255
+      example: "mqtt://192.168.1.100:1883/living-room/thermostat"
+
+    DeviceSettings:
+      type: string
+      maxLength: 1000
+      example: "{\"min_temp\": 15, \"max_temp\": 30, \"schedule\": \"daily\"}"
+
+    Timestamp:
+      type: string
+      format: date-time
+      example: "2023-12-01T10:00:00Z"
+
+    DeviceActionType:
+      type: string
+      enum: [turnOn, turnOff, setValue, switch]
+      description: Тип действия для выполнения над устройством
+      example: "turnOn"
+
+    DeviceState:
+      type: string
+      maxLength: 2000
+      description: Состояние устройства в формате JSON
+      example: "{\"power\": \"on\", \"temperature\": 22, \"mode\": \"heat\"}"
+
+    ActionValue:
+      type: string
+      maxLength: 500
+      description: Опциональное значение для действия setValue (формат JSON)
+      example: "{\"temperature\": 24}"
+
+    DeviceCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - protocol
+        - uri
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DeviceId'
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceActionRequest:
+      type: object
+      required:
+        - action_type
+      properties:
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        value:
+          $ref: '#/components/schemas/ActionValue'
+
+    DeviceActionResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        success:
+          type: boolean
+          example: true
+        new_state:
+          $ref: '#/components/schemas/DeviceState'
+        executed_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceStateResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+        state:
+          $ref: '#/components/schemas/DeviceState'
+        last_updated:
+          $ref: '#/components/schemas/Timestamp'
+
+    SensorId:
+      type: integer
+      minimum: 1
+      example: 101
+
+    ActionId:
+      type: integer
+      minimum: 1
+      example: 201
+
+    TriggerId:
+      type: integer
+      minimum: 1
+      example: 301
+
+    UpdateFrequency:
+      type: integer
+      minimum: 1
+      description: Частота обновления в секундах
+      example: 60
+
+    UnixTimestamp:
+      type: integer
+      description: Unix timestamp в секундах
+      example: 1701432000
+
+    SensorState:
+      type: string
+      maxLength: 1000
+      description: Состояние датчика в формате JSON
+      example: "{\"temperature\": 22.5, \"humidity\": 45}"
+
+    ActionType:
+      type: string
+      enum: [turn_on, turn_off, set_temperature, send_notification, open, close]
+      example: "set_temperature"
+
+    TriggerType:
+      type: string
+      enum: [threshold, schedule, state_change, composite]
+      example: "threshold"
+
+    TriggerOperator:
+      type: string
+      enum: [greater_than, less_than, equal, not_equal, greater_or_equal, less_or_equal]
+      example: "greater_than"
+
+    TriggerThreshold:
+      type: integer
+      description: Пороговое значение для сравнения триггера
+      example: 25
+
+    SensorCreateRequest:
+      type: object
+      required:
+        - device_id
+        - update_frequency
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorUpdateRequest:
+      type: object
+      properties:
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+
+    SensorResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SensorId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        update_frequency:
+          $ref: '#/components/schemas/UpdateFrequency'
+        last_updated_ts:
+          $ref: '#/components/schemas/UnixTimestamp'
+        last_state:
+          $ref: '#/components/schemas/SensorState'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    ActionCreateRequest:
+      type: object
+      required:
+        - device_id
+        - type
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ActionType'
+
+    ActionResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ActionId'
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        type:
+          $ref: '#/components/schemas/ActionType'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    TriggerCreateRequest:
+      type: object
+      required:
+        - sensor_id
+        - action_id
+        - type
+        - operator
+        - threshold
+      properties:
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerUpdateRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+
+    TriggerResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/TriggerId'
+        sensor_id:
+          $ref: '#/components/schemas/SensorId'
+        action_id:
+          $ref: '#/components/schemas/ActionId'
+        type:
+          $ref: '#/components/schemas/TriggerType'
+        operator:
+          $ref: '#/components/schemas/TriggerOperator'
+        threshold:
+          $ref: '#/components/schemas/TriggerThreshold'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'

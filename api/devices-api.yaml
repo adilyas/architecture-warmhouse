@@ -1,0 +1,411 @@
+openapi: 3.0.4
+info:
+  title: Device Service API
+  description: Сервис управления устройствами для регистрации, редактирования и удаления
+  version: 1.0.0
+
+servers:
+  - url: http://12.34.56.89:8080
+    description: Сервис управления устройствами
+
+paths:
+  /devices:
+    post:
+      summary: Регистрация нового устройства
+      description: Создает новое устройство для аутентифицированного пользователя
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreateRequest'
+      responses:
+        '201':
+          description: Устройство успешно зарегистрировано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Получение всех устройств пользователя
+      description: Возвращает все устройства, принадлежащие аутентифицированному пользователю
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Устройства успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}:
+    get:
+      summary: Получение устройства по ID
+      description: Возвращает конкретное устройство по ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Устройство успешно получено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновление устройства
+      description: Обновляет существующее устройство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateRequest'
+      responses:
+        '200':
+          description: Устройство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удаление устройства
+      description: Удаляет существующее устройство
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '204':
+          description: Устройство успешно удалено
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/state:
+    get:
+      summary: Получение состояния устройства
+      description: Возвращает текущее состояние устройства в формате JSON
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      responses:
+        '200':
+          description: Состояние устройства успешно получено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceStateResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /devices/{deviceId}/action:
+    post:
+      summary: Выполнение действия над устройством
+      description: Выполняет действие над устройством для изменения его состояния
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/DeviceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceActionRequest'
+      responses:
+        '200':
+          description: Действие успешно выполнено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceActionResponse'
+        '400':
+          description: Некорректный запрос - недопустимое действие для типа устройства
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    DeviceId:
+      type: integer
+      minimum: 1
+      example: 123
+
+    UserId:
+      type: integer
+      minimum: 1
+      example: 456
+
+    DeviceName:
+      type: string
+      minLength: 1
+      maxLength: 100
+      example: "Термостат гостиной"
+
+    DeviceType:
+      type: string
+      enum: [thermometer, thermostat, light, gate, camera]
+      example: "thermostat"
+
+    DeviceProtocol:
+      type: string
+      enum: [MQTT, CoAP, HTTP, AMQP]
+      example: "MQTT"
+
+    DeviceUri:
+      type: string
+      minLength: 1
+      maxLength: 255
+      example: "mqtt://192.168.1.100:1883/living-room/thermostat"
+
+    DeviceSettings:
+      type: string
+      maxLength: 1000
+      example: "{\"min_temp\": 15, \"max_temp\": 30, \"schedule\": \"daily\"}"
+
+    Timestamp:
+      type: string
+      format: date-time
+      example: "2023-12-01T10:00:00Z"
+
+    DeviceActionType:
+      type: string
+      enum: [turnOn, turnOff, setValue, switch]
+      description: Тип действия для выполнения над устройством
+      example: "turnOn"
+
+    DeviceState:
+      type: string
+      maxLength: 2000
+      description: Состояние устройства в формате JSON
+      example: "{\"power\": \"on\", \"temperature\": 22, \"mode\": \"heat\"}"
+
+    ActionValue:
+      type: string
+      maxLength: 500
+      description: Опциональное значение для действия setValue (формат JSON)
+      example: "{\"temperature\": 24}"
+
+    DeviceCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - protocol
+        - uri
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceUpdateRequest:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+
+    DeviceResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DeviceId'
+        name:
+          $ref: '#/components/schemas/DeviceName'
+        type:
+          $ref: '#/components/schemas/DeviceType'
+        protocol:
+          $ref: '#/components/schemas/DeviceProtocol'
+        uri:
+          $ref: '#/components/schemas/DeviceUri'
+        settings:
+          $ref: '#/components/schemas/DeviceSettings'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        created_at:
+          $ref: '#/components/schemas/Timestamp'
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceActionRequest:
+      type: object
+      required:
+        - action_type
+      properties:
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        value:
+          $ref: '#/components/schemas/ActionValue'
+
+    DeviceActionResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        action_type:
+          $ref: '#/components/schemas/DeviceActionType'
+        success:
+          type: boolean
+          example: true
+        new_state:
+          $ref: '#/components/schemas/DeviceState'
+        executed_at:
+          $ref: '#/components/schemas/Timestamp'
+
+    DeviceStateResponse:
+      type: object
+      properties:
+        device_id:
+          $ref: '#/components/schemas/DeviceId'
+        device_type:
+          $ref: '#/components/schemas/DeviceType'
+        state:
+          $ref: '#/components/schemas/DeviceState'
+        last_updated:
+          $ref: '#/components/schemas/Timestamp'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer

@@ -1,0 +1,37 @@
+@startuml C4_Component_DeviceService
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Диаграмма компонентов - Сервис управления устройствами
+
+Container(api_gateway, "API Gateway", "Go/Gin", "Маршрутизирует запросы")
+Container(automation_service, "Сервис автоматизации", "Go", "Управляет сценариями автоматизации")
+ContainerDb(database, "База данных", "PostgreSQL", "Хранение данных об устройствах")
+
+Container_Boundary(device_service, "Сервис управления устройствами") {
+    Component(device_api, "Device API", "REST/gRPC", "API для регистрации устройств и управления ими")
+    Component(device_registry, "Регистрация устройств", "Go", "Регистрация новых устройств")
+    Component(device_controller, "Контроллер устройств", "Go", "Управление состоянием и настройками устройств, получение данных с них")
+    Component(device_monitor, "Монитор датчиков и состояния устройств", "Go", "Получение данных с устройств и их сохранение для быстрого просмотра в интерфейсе")
+    Component(protocol_adapters, "Адаптеры протоколов", "Go", "Стандартизация работы с различными протоколами IoT")
+    Component(data_access, "Репозиторий", "Go", "Абстракция для работы с базой данных")
+}
+
+System_Ext(iot_devices, "IoT Устройства", "Датчики, термостаты, камеры и другие умные устройства")
+
+Rel(api_gateway, device_api, "Запросы к устройствам", "gRPC")
+Rel(automation_service, device_api, "Получение данных датчиков", "gRPC")
+
+Rel(device_api, device_registry, "Регистрация новых устройств", "")
+Rel(device_api, device_controller, "Управление устройствами", "")
+
+Rel(device_registry, data_access, "Сохранение данных устройств", "")
+Rel(device_controller, protocol_adapters, "Взаимодействие с устройствами", "")
+Rel(device_controller, data_access, "Обновление состояния", "")
+Rel(device_monitor, protocol_adapters, "Взаимодействие с устройствами", "")
+Rel(device_monitor, data_access, "Обновление состояния", "")
+
+Rel(data_access, database, "SQL запросы", "SQL")
+Rel(protocol_adapters, iot_devices, "Управление и мониторинг", "IoT протоколы")
+
+SHOW_LEGEND()
+@enduml
